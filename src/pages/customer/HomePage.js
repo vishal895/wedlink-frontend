@@ -24,9 +24,11 @@ export default function HomePage() {
   const [city,   setCity]       = useState("");
   const [featured, setFeatured] = useState([]);
 
-  useEffect(() => {
-    API.get("/vendors?sort=featured&limit=6").then(r => setFeatured(r.data.vendors)).catch(() => {});
-  }, []);
+ useEffect(() => {
+  API.get("/vendors?sort=featured&limit=6")
+    .then(r => setFeatured(r.data?.vendors || [])) // ✅ safe fallback
+    .catch(() => setFeatured([])); // also safe
+}, []);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -76,12 +78,12 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED VENDORS */}
-      {featured.length > 0 && (
+      {featured ?.length > 0 && (
         <section style={{ ...s.section, background:"#f9f5ff" }}>
           <h2 style={s.sectionTitle}>Featured <span style={{ color:"#c9a84c" }}>Vendors</span></h2>
           <p style={s.sectionSub}>Top-rated vendors trusted by thousands of couples</p>
           <div style={s.vendorGrid}>
-            {featured.map(v => <VendorCard key={v._id} vendor={v} />)}
+            {featured ?.map(v => <VendorCard key={v._id} vendor={v} />)}
           </div>
           <div style={{ textAlign:"center", marginTop:40 }}>
             <button style={s.viewAllBtn} onClick={() => navigate("/vendors")}>View All Vendors →</button>
